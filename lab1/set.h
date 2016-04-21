@@ -27,21 +27,22 @@ private:
         NodePtr next;
         NodePtr prev;
         T data;
-        int nid;
+        int id;
         
-        Node(T d = T{}, NodePtr np = nullptr , NodePtr pp = nullptr,int id = -1)
+        Node(T d = T{}, NodePtr np = nullptr , NodePtr pp = nullptr,int i = -1)
         {
             //cout << "Node constructor" << endl;
             data = d;
             next = np;
             prev = pp;
-            nid = id;
+            id = i;
         }       
     };
     typedef shared_ptr<Node> NodePtr;    
     //PRIVATE VARIABLES
     NodePtr head;  
     NodePtr tail;
+    int nNodes = 0;
     
     //PRIVATE METHODS
     friend ostream& operator<<(ostream& os, const Set(& s)){
@@ -49,7 +50,7 @@ private:
            os << "EMPTY"; 
         } else{
             for(NodePtr np = s.head->next; np != s.tail; np=np->next){
-                os << np->data;   
+                os << np->data << " ";   
             }
                    
         } 
@@ -70,8 +71,8 @@ Set<T>::Set()
     head->next = tail;
     head->prev = nullptr;
     
-    tail->next = head;
-    head->prev = nullptr;
+    tail->next = nullptr;
+    tail->prev = head;
     
 }
 
@@ -92,7 +93,7 @@ Set<T>::Set(T data[],int size) : Set() {
     //loop array assuming that user input correct size (retarded)
     
     for(int i = 0; i<size;i++){
-        cout << "round " << i << " data: " << data[i] << endl;
+
         insertLast(data[i]);
     }
 }
@@ -119,6 +120,9 @@ bool Set<T>::isEmpty() const
 template <typename T>
 void Set<T>::insertLast(T data)
 {
-    cout << tail->prev->next->data;
-    tail->prev->next = make_shared<Node>(data,tail,tail->prev);
+    
+    //cout << "hep" << tail->prev->next << endl;
+    nNodes++;
+    tail->prev->next = make_shared<Node>(data,tail,tail->prev,nNodes);
+    tail->prev = tail->prev->next;
 }

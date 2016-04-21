@@ -40,7 +40,8 @@ int main()
 
     Set<int> S3(A1, 3);
     Set<int> S4(A2, 3);
-
+       
+    
     cout << "S3 = " << S3 << endl;
     cout << "S4 = " << S4 << endl;
 
