@@ -44,7 +44,7 @@ S1.is_member(3) ? T
 S1.is_member(4) ? F
 S1.is_member(5) ? T
 
-S1.is_member(99999) ? F
+S1.is_member(99999) ? F	
 
 TEST PHASE 7: cardinality
 
