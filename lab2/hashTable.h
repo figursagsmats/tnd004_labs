@@ -13,7 +13,7 @@
 
 using namespace std;
 
-const int NOT_FOUND = -1;
+const int NOT_FOUND = -1; //used for?
 const double MAX_LOAD_FACTOR = 0.5;
 
 
@@ -63,7 +63,7 @@ public:
         return count_new_items;
     }
 
-
+    
     //Return a pointer to the value associated with key
     //If key does not exist in the table then nullptr is returned
     const Value_Type* _find(const Key_Type& key);
@@ -169,10 +169,8 @@ HashTable<Key_Type, Value_Type>::HashTable(int table_size, HASH f)
     _size = nextPrime(table_size); //set size to next prime number
     nDeleted = nItems = total_visited_slots = count_new_items = 0; //init variables to 0
 
-    hTable = new Item<Key_Type, Value_Type>*[_size]; //allocate memory for the table
+    hTable = new Item<Key_Type, Value_Type>*[_size]{nullptr}; //allocate memory for the table, init with nullptr
 
-    for(int i = 0; i < _size; i++) //init array with nullptrs
-        hTable[i] = nullptr;
 }
 
 
@@ -215,7 +213,7 @@ const Value_Type* HashTable<Key_Type, Value_Type>::_find(const Key_Type& key)
 
        //full loop = didnt find
        if(idx == startpoint)
-        return nullptr;
+            return nullptr;
    }
    //should never end up here...
    return nullptr;
@@ -229,16 +227,14 @@ template <typename Key_Type, typename Value_Type>
 void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_Type& v)
 {
      //IMPLEMENT
-     if(loadFactor() > MAX_LOAD_FACTOR){
-         cout << "Rehash called from insert!\n";
-         rehash();
-     }
-
-     const Value_Type* value = _find(key);
-     if(value){
-         value = &v; //if we find the key allready in the talbe, update its value
-         return;
-     }
+     
+    //  const Value_Type* foundValue = _find(key);
+     //return type of FIND is pointer to const value. const value cant be modified ???
+    //  if(foundValue){
+        //  foundValue = v; //if we find the key allready in the talbe, update its value
+        //  return;
+    //  }
+     
      //IF key is not allready in the table.. loop to the first suitable location and make an insert
     int idx = h(key, _size);
     int startpoint = idx;
@@ -246,27 +242,28 @@ void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_T
     {
         total_visited_slots++;
 
-        if (hTable[idx] == nullptr)
+        if (hTable[idx] == nullptr /*&& !foundValue */)
         {
             //if null
+            cout << "inserting#1" << endl;
             hTable[idx] = new Item<Key_Type, Value_Type>{key, v};
             count_new_items++;
             nItems++;
             break;
         }
-        if (hTable[idx] == Deleted_Item<Key_Type, Value_Type>::get_Item())
+        if (hTable[idx] == Deleted_Item<Key_Type, Value_Type>::get_Item() /*&& !foundValue */)
         {
             //if deleted
-            cout << endl << "VISITED DELETED SLOT!!!" << endl << endl;
-            hTable[idx] = new Item<Key_Type, Value_Type>{key, v};
-            count_new_items++;
-            nItems++;
-            nDeleted --;
-            break;
+            // cout << endl << "VISITED DELETED SLOT!!!" << endl << endl;
+            // hTable[idx] = new Item<Key_Type, Value_Type>{key, v};
+            // count_new_items++;
+            // nItems++;
+            // nDeleted --;
+            // break;
         }
         if(hTable[idx]->get_key() == key)
         {
-            cout << "SHOULD NEVER END UP HERE! (insert...)" << endl;
+            // cout << "SHOULD NEVER END UP HERE! (insert...)" << endl;
             hTable[idx]->set_value(v);
             break;
         }
@@ -283,6 +280,11 @@ void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_T
             break;
         }
     }
+    
+    if(loadFactor() > MAX_LOAD_FACTOR){
+         cout << "Rehash called from insert!\n";
+         rehash();
+     }
 }
 
 
@@ -296,7 +298,9 @@ bool HashTable<Key_Type, Value_Type>::_remove(const Key_Type& key)
     // const Value_Type* value = _find(key);
     // if(!value)
     //     return false;
-
+    
+    //FIND cant be used here either i guess??? const value *.....
+    
     int idx = h(key, _size);
     int startpoint = idx;
     while(1)
@@ -305,6 +309,8 @@ bool HashTable<Key_Type, Value_Type>::_remove(const Key_Type& key)
 
         if(hTable[idx]->get_key() == key) {
             delete hTable[idx];
+            nItems --;
+            nDeleted ++;
             hTable[idx] = Deleted_Item<Key_Type, Value_Type>::get_Item();
             return true;
         }
@@ -366,32 +372,30 @@ void HashTable<Key_Type, Value_Type>::rehash()
 
     //uppdate the members to fit the new table
     int oldsize = _size;
-    nItems = nDeleted = 0; //borde statistik variablerna nollas?
+    nDeleted = 0; //borde statistik variablerna nollas?
     Item<Key_Type, Value_Type>** oldTable = hTable; //a new pointer to the old table
 
     _size = nextPrime(_size * 2); //allocate new table at 2x size
-    hTable = new Item<Key_Type, Value_Type>*[_size]; //no safety here.. assumes that there allways will be a new allocation available
+    hTable = new Item<Key_Type, Value_Type>*[_size] {nullptr}; //no safety here.. assumes that there allways will be a new allocation available
 
      //Init the new table with nullptrs
-    for(int i = oldsize; i < _size; i++)
-        hTable[i] = nullptr;
+    // for(int i = oldsize; i < _size; i++)
+        // hTable[i] = nullptr;
 
     for (int i = 0; i < oldsize; ++i)
     {
-        hTable[i] = nullptr;
         if(oldTable[i] != nullptr && oldTable[i] != Deleted_Item<Key_Type, Value_Type>::get_Item())
         {
             //insert values from old nodes and dealocate the objects pointed to
             _insert(oldTable[i]->get_key(), oldTable[i]->get_value() ); //insert from old to the new table
             delete oldTable[i];
         }
-        oldTable[i] = nullptr;
     }
     //dealocate the pointers
     delete[] oldTable;
 
 
-    //should proboably not end up here
+    //should not end up here
     if(loadFactor() > MAX_LOAD_FACTOR){
         cout << "OBS! Recursive rehash call!\n";
         rehash();
