@@ -179,10 +179,34 @@ template <typename Key_Type, typename Value_Type>
 HashTable<Key_Type, Value_Type>::~HashTable()
 {
     //IMPLEMENT
-    for(int i = 0; i < _size; i++)
-        delete hTable[i]; //delete nodes pointed to
-
+    display(cout);
+    cout << "DESTRUCTOR running... " << endl;
+    for(int i = 0; i < _size; i++){
+        cout << i << endl;
+        if(hTable[i] == nullptr) {    
+            cout << i << " is nullptr... move on... " << endl;
+            continue;
+        }
+        else if(hTable[i] == Deleted_Item<Key_Type, Value_Type>::get_Item()){
+            cout << i << " is deleted... move on... " << endl;
+            continue; 
+        }
+        else {
+             cout << i << " points to an item... delete... " << endl;
+             if(i == 59)
+             {
+                 if(hTable[i] != nullptr)
+                    cout << "okej" << endl;
+                    // cout << hTable[i]->get_key();
+             }
+             delete hTable[i];
+        }
+        
+    }
+    
+    cout << "DESTRUCTOR middle... " << endl;
     delete[] hTable; //delete the dynamiclly allocated pointers asswell
+    cout << "DESTRUCTOR done... " << endl;
 }
 
 
@@ -284,7 +308,7 @@ void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_T
     if(loadFactor() > MAX_LOAD_FACTOR){
          cout << "Rehash called from insert!\n";
          rehash();
-     }
+    }
 }
 
 
@@ -325,6 +349,50 @@ bool HashTable<Key_Type, Value_Type>::_remove(const Key_Type& key)
         }
     }
     return false;
+}
+template <typename Key_Type, typename Value_Type>
+Value_Type& HashTable<Key_Type, Value_Type>::operator[](const Key_Type& key)
+{
+    int idx = h(key, _size);
+    int startpoint = idx;
+    // cout << "Innan while()" << endl;
+    while(1)
+    {
+        total_visited_slots++;
+        // cout << "I while()" << endl;
+        
+        if(hTable[idx] == nullptr){
+            hTable[idx] = new Item<Key_Type, Value_Type>{key, Value_Type{}};
+            count_new_items++;
+            nItems++;
+            
+            if(loadFactor() > MAX_LOAD_FACTOR){
+                cout << "Rehash called []!\n";
+                rehash();
+            }
+    
+            return hTable[idx]->get_value();  
+        }
+
+        if(hTable[idx]->get_key() == key) {
+            delete hTable[idx];
+            // nItems --;
+            // nDeleted ++;
+            return hTable[idx]->get_value();  
+        }
+        
+        //increment
+        idx++;
+        if(idx == _size)
+            idx = 0;
+
+        if(idx == startpoint) {
+            cout << "couldnt fetch!!! \n";
+            break;
+        }
+    }
+    cout << "WARNING ended up at bottom in []operator" << endl;
+    return hTable[idx]->get_value();   
 }
 
 //Display the table for debug and testing purposes
@@ -393,7 +461,7 @@ void HashTable<Key_Type, Value_Type>::rehash()
     }
     //dealocate the pointers
     delete[] oldTable;
-
+    cout << "LEAVING REHASH" << endl;
 
     //should not end up here
     if(loadFactor() > MAX_LOAD_FACTOR){

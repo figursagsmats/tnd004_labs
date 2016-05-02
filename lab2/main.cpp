@@ -33,9 +33,10 @@ int main()
 
     string name;
 
-    cout << "Enter file name: ";
-    cin >> name;
-
+    // cout << "Enter file name: ";
+    // cin >> name;
+    name = "test_file1.txt";
+    
     ifstream file_in(name);
     ofstream file_out("out_"+name);
 
@@ -48,7 +49,7 @@ int main()
 
     string s;
     int _count = 0;
-
+    
     //Read words and load them in the hash table
     while (file_in >> s)
     {
@@ -61,13 +62,15 @@ int main()
         {
             return (PUNCT.find(c) == string::npos);
         });
-
+        // cout << "HÄR!" << endl;
         //if s is not in the table then it is inserted
         freq_table[s1]++;
 
         _count++;
     }
-
+    
+    
+    cout << "INTE HÄR?" << endl;
     unsigned total = freq_table.get_total_visited_slots();
 
     cout << "\nNumber of words in the file = " << _count << endl;
@@ -86,12 +89,15 @@ int main()
 
     cout << "Average Number of slots visited = "
          << fixed << setprecision(2) << (double)total / _count << endl;
-
+    
+    
+    
 
     file_out << "Frequency table ..." << endl << endl;
 
     file_out << freq_table << endl;
 
+    cout << "OKEJSANNSNSN" << endl;
 
     //close the file streams
     file_in.close();
