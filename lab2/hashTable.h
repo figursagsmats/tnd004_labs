@@ -229,18 +229,17 @@ template <typename Key_Type, typename Value_Type>
 void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_Type& v)
 {
      //IMPLEMENT
+     if(loadFactor() > MAX_LOAD_FACTOR){
+         cout << "Rehash called from insert!\n";
+         rehash();
+     }
+
      const Value_Type* value = _find(key);
      if(value){
          value = &v; //if we find the key allready in the talbe, update its value
          return;
      }
-    //  //if Key is in table update value  //FIND dosnt help us??? it dosnt return the position in the htable where it found the item. just a pointer to the item
-
-    if(loadFactor() > MAX_LOAD_FACTOR){
-        cout << "Rehash called from insert!\n";
-        rehash();
-    }
-
+     //IF key is not allready in the table.. loop to the first suitable location and make an insert
     int idx = h(key, _size);
     int startpoint = idx;
     while(1)
