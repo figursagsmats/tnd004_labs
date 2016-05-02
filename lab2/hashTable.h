@@ -168,10 +168,10 @@ HashTable<Key_Type, Value_Type>::HashTable(int table_size, HASH f)
     //IMPLEMENT
     _size = nextPrime(table_size); //set size to next prime number
     nDeleted = nItems = total_visited_slots = count_new_items = 0; //init variables to 0
-    
+
     hTable = new Item<Key_Type, Value_Type>*[_size]; //allocate memory for the table
-    
-    for(int i = 0; i < _size; i++)
+
+    for(int i = 0; i < _size; i++) //init array with nullptrs
         hTable[i] = nullptr;
 }
 
@@ -183,7 +183,7 @@ HashTable<Key_Type, Value_Type>::~HashTable()
     //IMPLEMENT
     for(int i = 0; i < _size; i++)
         delete hTable[i]; //delete nodes pointed to
-    
+
     delete[] hTable; //delete the dynamiclly allocated pointers asswell
 }
 
@@ -197,23 +197,23 @@ const Value_Type* HashTable<Key_Type, Value_Type>::_find(const Key_Type& key)
    int idx = h(key, _size);
    int startpoint = idx;
    cout << "INSERT at idx: " << idx << endl;
-   
+
    while(1){
        //null -> return null. (deleted = move on...)
        if(hTable[idx] == nullptr)
         return nullptr;
-       
+
        //return pointer to the key if found
        if(hTable[idx]->get_key() == key)
         return &hTable[idx]->get_value();
-       
+
        //increment
        idx++;
        total_visited_slots++;
        if(idx == _size)
         idx = 0;
-        
-       //full loop
+
+       //full loop = didnt find
        if(idx == startpoint)
         return nullptr;
    }
@@ -229,24 +229,24 @@ template <typename Key_Type, typename Value_Type>
 void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_Type& v)
 {
      //IMPLEMENT
-    //  const Value_Type* value = _find(key);
-        
-    //  //if Key is in table update value
-    //  if(value != nullptr && hTable[idx] != Deleted_Item< Key_Type,Value_Type >::get_Item() ){
-    //    hTable[*value]->set_value(v); 
-    //  }
-     
+     const Value_Type* value = _find(key);
+     if(value){
+         value = &v; //if we find the key allready in the talbe, update its value
+         return;
+     }
+    //  //if Key is in table update value  //FIND dosnt help us??? it dosnt return the position in the htable where it found the item. just a pointer to the item
+
     if(loadFactor() > MAX_LOAD_FACTOR){
         cout << "Rehash called from insert!\n";
         rehash();
-    } 
-    
+    }
+
     int idx = h(key, _size);
     int startpoint = idx;
     while(1)
     {
         total_visited_slots++;
-        
+
         if (hTable[idx] == nullptr)
         {
             //if null
@@ -257,42 +257,30 @@ void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_T
         }
         if (hTable[idx] == Deleted_Item<Key_Type, Value_Type>::get_Item())
         {
-            cout << endl << "VISITED DELETED SLOT!!!" << endl << endl;
             //if deleted
+            cout << endl << "VISITED DELETED SLOT!!!" << endl << endl;
             hTable[idx] = new Item<Key_Type, Value_Type>{key, v};
             count_new_items++;
             nItems++;
-            nDeleted --; 
+            nDeleted --;
             break;
         }
         if(hTable[idx]->get_key() == key)
         {
+            cout << "SHOULD NEVER END UP HERE! (insert...)" << endl;
             hTable[idx]->set_value(v);
             break;
         }
-        
-        
+
         //increment
        idx++;
        if(idx == _size)
         idx = 0;
-        
-                
-        // if( hTable[idx] == nullptr || hTable[idx] == Deleted_Item< Key_Type,Value_Type >::get_Item() )
-        // {
-        //     if( hTable[idx] == Deleted_Item<Key_Type, Value_Type>::get_Item() )
-        //         nDeleted --;       
-        //     
-        //     hTable[idx] = new Item<Key_Type, Value_Type>{key, v}; 
-        //     count_new_items++;
-        //     nItems++;
-        //     break;
-        // }
-        
+
        //full loop
        if(idx == startpoint)
         {
-            cout << "couldnt insert!!! \n"; 
+            cout << "couldnt insert!!! \n";
             break;
         }
     }
@@ -309,13 +297,13 @@ bool HashTable<Key_Type, Value_Type>::_remove(const Key_Type& key)
     // const Value_Type* value = _find(key);
     // if(!value)
     //     return false;
-        
+
     int idx = h(key, _size);
     int startpoint = idx;
     while(1)
     {
         total_visited_slots++;
-        
+
         if(hTable[idx]->get_key() == key) {
             delete hTable[idx];
             hTable[idx] = Deleted_Item<Key_Type, Value_Type>::get_Item();
@@ -325,9 +313,9 @@ bool HashTable<Key_Type, Value_Type>::_remove(const Key_Type& key)
         idx++;
         if(idx == _size)
             idx = 0;
-    
+
         if(idx == startpoint) {
-            cout << "couldnt remove!!! \n"; 
+            cout << "couldnt remove!!! \n";
             break;
         }
     }
@@ -376,19 +364,19 @@ template <typename Key_Type, typename Value_Type>
 void HashTable<Key_Type, Value_Type>::rehash()
 {
      cout << "Rehashing\n";
-     
+
     //uppdate the members to fit the new table
     int oldsize = _size;
     nItems = nDeleted = 0; //borde statistik variablerna nollas?
     Item<Key_Type, Value_Type>** oldTable = hTable; //a new pointer to the old table
-    
+
     _size = nextPrime(_size * 2); //allocate new table at 2x size
     hTable = new Item<Key_Type, Value_Type>*[_size]; //no safety here.. assumes that there allways will be a new allocation available
-    
-     //Init the new table with nullptrs   
+
+     //Init the new table with nullptrs
     for(int i = oldsize; i < _size; i++)
         hTable[i] = nullptr;
-        
+
     for (int i = 0; i < oldsize; ++i)
     {
         hTable[i] = nullptr;
@@ -402,13 +390,13 @@ void HashTable<Key_Type, Value_Type>::rehash()
     }
     //dealocate the pointers
     delete[] oldTable;
-    
-    
+
+
     //should proboably not end up here
     if(loadFactor() > MAX_LOAD_FACTOR){
         cout << "OBS! Recursive rehash call!\n";
         rehash();
-    } 
+    }
 }
 
 /* ********************************** *
@@ -443,5 +431,3 @@ int nextPrime( int n )
 
     return n;
 }
-
-
