@@ -30,8 +30,8 @@ public:
 
     //New type HASH: pointer to a hash function
     typedef unsigned (*HASH)(Key_Type, int);
-
-
+    
+    
     //Constructor to create a hash table
     //table_size is number of slots in the table (next prime number is used)
     //f is the hash function
@@ -107,7 +107,8 @@ public:
     //Display the table for debug and testing purposes
     //Thus, empty and deleted entries are also displayed
     void display(ostream& os);
-
+    
+    void disallowRehashing();
 
 private:
 
@@ -135,6 +136,7 @@ private:
     //Some statistics
     unsigned total_visited_slots;  //total number of visited slots
     unsigned count_new_items;      //number of calls to new Item()
+    bool rehashingAllowed = true;
 
 
     /* ********************************** *
@@ -260,7 +262,7 @@ void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_T
         hTable[idxs.matchOrEmptyIdx]->set_value(v);   
     }
     
-    if(loadFactor() > MAX_LOAD_FACTOR)
+    if(loadFactor() > MAX_LOAD_FACTOR && rehashingAllowed)
     {
          rehash();
     } 
@@ -293,7 +295,7 @@ bool HashTable<Key_Type, Value_Type>::_remove(const Key_Type& key)
 template <typename Key_Type, typename Value_Type>
 Value_Type& HashTable<Key_Type, Value_Type>::operator[](const Key_Type& key)
 {
-    if(loadFactor() > MAX_LOAD_FACTOR)
+    if(loadFactor() > MAX_LOAD_FACTOR && rehashingAllowed)
     {
         rehash();
     }
@@ -366,7 +368,10 @@ void HashTable<Key_Type, Value_Type>::display(ostream& os)
 
     os << endl;
 }
-
+template <typename Key_Type, typename Value_Type>
+void HashTable<Key_Type, Value_Type>::disallowRehashing(){
+    rehashingAllowed = false;
+}
 
 /* ********************************** *
 * Auxiliar member functions           *
@@ -397,7 +402,7 @@ void HashTable<Key_Type, Value_Type>::rehash()
     delete[] oldTable;
 
     //should not end up here
-    if(loadFactor() > MAX_LOAD_FACTOR){
+    if(loadFactor() > MAX_LOAD_FACTOR && rehashingAllowed){
         cout << "OBS! Recursive rehash call!\n";
         rehash();
     }
