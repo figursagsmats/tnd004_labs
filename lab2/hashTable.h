@@ -13,9 +13,13 @@
 
 using namespace std;
 
-const int NOT_FOUND = -1; //used for?
+const int NOT_FOUND = -1;
 const double MAX_LOAD_FACTOR = 0.5;
 
+struct idxPair {
+    int matchOrEmptyIdx;
+    int firstDeletedIdx;
+};
 
 //Template class to represent an open addressing hash table using linear probing to resolve collisions
 //Internally the table is represented as an array of pointers to Items
@@ -137,6 +141,7 @@ private:
     * Auxiliar member functions           *
     * *********************************** */
     void rehash();
+    idxPair locateIdxs(const Key_Type& key);
 
     //Disable copy constructor!!
     HashTable(const HashTable &) = delete;
@@ -166,11 +171,10 @@ HashTable<Key_Type, Value_Type>::HashTable(int table_size, HASH f)
     : h(f)
 {
     //IMPLEMENT
-    _size = nextPrime(table_size); //set size to next prime number
-    nDeleted = nItems = total_visited_slots = count_new_items = 0; //init variables to 0
-
+    _size = nextPrime(table_size); 
+    nDeleted = nItems = total_visited_slots = count_new_items = 0; 
+    
     hTable = new Item<Key_Type, Value_Type>*[_size]{nullptr}; //allocate memory for the table, init with nullptr
-
 }
 
 
@@ -179,34 +183,23 @@ template <typename Key_Type, typename Value_Type>
 HashTable<Key_Type, Value_Type>::~HashTable()
 {
     //IMPLEMENT
-    display(cout);
-    cout << "DESTRUCTOR running... " << endl;
-    for(int i = 0; i < _size; i++){
-        cout << i << endl;
-        if(hTable[i] == nullptr) {    
-            cout << i << " is nullptr... move on... " << endl;
+    for(int i = 0; i < _size; i++)
+    {
+        //cout << i << endl;
+        if(hTable[i] == nullptr) 
+        {    
             continue;
         }
-        else if(hTable[i] == Deleted_Item<Key_Type, Value_Type>::get_Item()){
-            cout << i << " is deleted... move on... " << endl;
+        else if(hTable[i] == Deleted_Item<Key_Type, Value_Type>::get_Item())
+        {
             continue; 
         }
-        else {
-             cout << i << " points to an item... delete... " << endl;
-             if(i == 59)
-             {
-                 if(hTable[i] != nullptr)
-                    cout << "okej" << endl;
-                    // cout << hTable[i]->get_key();
-             }
-             delete hTable[i];
+        else 
+        {
+            delete hTable[i]; //free only the allocate memory
         }
-        
     }
-    
-    cout << "DESTRUCTOR middle... " << endl;
     delete[] hTable; //delete the dynamiclly allocated pointers asswell
-    cout << "DESTRUCTOR done... " << endl;
 }
 
 
@@ -215,32 +208,27 @@ HashTable<Key_Type, Value_Type>::~HashTable()
 template <typename Key_Type, typename Value_Type>
 const Value_Type* HashTable<Key_Type, Value_Type>::_find(const Key_Type& key)
 {
-   //IMPLEMENT
-   int idx = h(key, _size);
-   int startpoint = idx;
-   cout << "INSERT at idx: " << idx << endl;
-
-   while(1){
-       //null -> return null. (deleted = move on...)
-       if(hTable[idx] == nullptr)
+    idxPair idxs = locateIdxs(key);
+    
+    bool isMatch = !!hTable[idxs.matchOrEmptyIdx];
+    
+    if(isMatch) 
+    {
+        if(idxs.firstDeletedIdx == NOT_FOUND)
+        {
+            return &hTable[idxs.matchOrEmptyIdx]->get_value();
+        } 
+        else 
+        {
+            hTable[idxs.firstDeletedIdx] = hTable[idxs.matchOrEmptyIdx];
+            hTable[idxs.matchOrEmptyIdx] = nullptr;
+            return &hTable[idxs.firstDeletedIdx]->get_value();     
+        }
+    }
+    else
+    {
         return nullptr;
-
-       //return pointer to the key if found
-       if(hTable[idx]->get_key() == key)
-        return &hTable[idx]->get_value();
-
-       //increment
-       idx++;
-       total_visited_slots++;
-       if(idx == _size)
-        idx = 0;
-
-       //full loop = didnt find
-       if(idx == startpoint)
-            return nullptr;
-   }
-   //should never end up here...
-   return nullptr;
+    }
 }
 
 
@@ -250,65 +238,32 @@ const Value_Type* HashTable<Key_Type, Value_Type>::_find(const Key_Type& key)
 template <typename Key_Type, typename Value_Type>
 void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_Type& v)
 {
-     //IMPLEMENT
-     
-    //  const Value_Type* foundValue = _find(key);
-     //return type of FIND is pointer to const value. const value cant be modified ???
-    //  if(foundValue){
-        //  foundValue = v; //if we find the key allready in the talbe, update its value
-        //  return;
-    //  }
-     
-     //IF key is not allready in the table.. loop to the first suitable location and make an insert
-    int idx = h(key, _size);
-    int startpoint = idx;
-    while(1)
+    idxPair idxs = locateIdxs(key);
+    
+    bool slotIsEmpty = !hTable[idxs.matchOrEmptyIdx];
+    
+    if(slotIsEmpty) 
     {
-        total_visited_slots++;
-
-        if (hTable[idx] == nullptr /*&& !foundValue */)
+        if(idxs.firstDeletedIdx == NOT_FOUND)
         {
-            //if null
-            cout << "inserting#1" << endl;
-            hTable[idx] = new Item<Key_Type, Value_Type>{key, v};
-            count_new_items++;
-            nItems++;
-            break;
-        }
-        if (hTable[idx] == Deleted_Item<Key_Type, Value_Type>::get_Item() /*&& !foundValue */)
+            hTable[idxs.matchOrEmptyIdx] = new Item<Key_Type, Value_Type>{key, v};
+        } 
+        else 
         {
-            //if deleted
-            // cout << endl << "VISITED DELETED SLOT!!!" << endl << endl;
-            // hTable[idx] = new Item<Key_Type, Value_Type>{key, v};
-            // count_new_items++;
-            // nItems++;
-            // nDeleted --;
-            // break;
+            hTable[idxs.firstDeletedIdx] = new Item<Key_Type, Value_Type>{key, v};
         }
-        if(hTable[idx]->get_key() == key)
-        {
-            // cout << "SHOULD NEVER END UP HERE! (insert...)" << endl;
-            hTable[idx]->set_value(v);
-            break;
-        }
-
-        //increment
-       idx++;
-       if(idx == _size)
-        idx = 0;
-
-       //full loop
-       if(idx == startpoint)
-        {
-            cout << "couldnt insert!!! \n";
-            break;
-        }
+        count_new_items++;
+        nItems++;
+    }
+    else
+    {
+        hTable[idxs.matchOrEmptyIdx]->set_value(v);   
     }
     
-    if(loadFactor() > MAX_LOAD_FACTOR){
-         cout << "Rehash called from insert!\n";
+    if(loadFactor() > MAX_LOAD_FACTOR)
+    {
          rehash();
-    }
+    } 
 }
 
 
@@ -318,81 +273,65 @@ void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_T
 template <typename Key_Type, typename Value_Type>
 bool HashTable<Key_Type, Value_Type>::_remove(const Key_Type& key)
 {
-    //IMPLEMENT
-    // const Value_Type* value = _find(key);
-    // if(!value)
-    //     return false;
+    idxPair idxs = locateIdxs(key);
     
-    //FIND cant be used here either i guess??? const value *.....
+    bool slotIsEmpty = !hTable[idxs.matchOrEmptyIdx];
     
-    int idx = h(key, _size);
-    int startpoint = idx;
-    while(1)
+    if(slotIsEmpty) 
     {
-        total_visited_slots++;
-
-        if(hTable[idx]->get_key() == key) {
-            delete hTable[idx];
-            nItems --;
-            nDeleted ++;
-            hTable[idx] = Deleted_Item<Key_Type, Value_Type>::get_Item();
-            return true;
-        }
-        //increment
-        idx++;
-        if(idx == _size)
-            idx = 0;
-
-        if(idx == startpoint) {
-            cout << "couldnt remove!!! \n";
-            break;
-        }
+        return false;
     }
-    return false;
+    else
+    {
+        delete hTable[idxs.matchOrEmptyIdx];   
+        nItems --;
+        nDeleted ++;
+        hTable[idxs.matchOrEmptyIdx] = Deleted_Item<Key_Type, Value_Type>::get_Item();
+        return true;
+    }
 }
 template <typename Key_Type, typename Value_Type>
 Value_Type& HashTable<Key_Type, Value_Type>::operator[](const Key_Type& key)
 {
-    int idx = h(key, _size);
-    int startpoint = idx;
-    // cout << "Innan while()" << endl;
-    while(1)
+    if(loadFactor() > MAX_LOAD_FACTOR)
     {
-        total_visited_slots++;
-        // cout << "I while()" << endl;
-        
-        if(hTable[idx] == nullptr){
-            hTable[idx] = new Item<Key_Type, Value_Type>{key, Value_Type{}};
-            count_new_items++;
-            nItems++;
-            
-            if(loadFactor() > MAX_LOAD_FACTOR){
-                cout << "Rehash called []!\n";
-                rehash();
-            }
+        rehash();
+    }
     
-            return hTable[idx]->get_value();  
-        }
-
-        if(hTable[idx]->get_key() == key) {
-            delete hTable[idx];
-            // nItems --;
-            // nDeleted ++;
-            return hTable[idx]->get_value();  
-        }
-        
-        //increment
-        idx++;
-        if(idx == _size)
-            idx = 0;
-
-        if(idx == startpoint) {
-            cout << "couldnt fetch!!! \n";
-            break;
+    idxPair idxs = locateIdxs(key);
+    
+    bool isMatch = !!hTable[idxs.matchOrEmptyIdx];
+    
+    if(isMatch) 
+    { 
+        if(idxs.firstDeletedIdx == NOT_FOUND)
+        {
+            return hTable[idxs.matchOrEmptyIdx]->get_value();
+        } 
+        else 
+        {
+            hTable[idxs.firstDeletedIdx] = hTable[idxs.matchOrEmptyIdx];
+            hTable[idxs.matchOrEmptyIdx] = nullptr;
+            return hTable[idxs.firstDeletedIdx]->get_value();     
         }
     }
-    cout << "WARNING ended up at bottom in []operator" << endl;
-    return hTable[idx]->get_value();   
+    else
+    {
+        count_new_items++;
+        nItems++;
+        if(idxs.firstDeletedIdx == NOT_FOUND)
+        {
+            hTable[idxs.matchOrEmptyIdx] = new Item<Key_Type, Value_Type>{key, Value_Type{}};
+            return hTable[idxs.matchOrEmptyIdx]->get_value();
+        }
+        else
+        {
+            hTable[idxs.firstDeletedIdx] = new Item<Key_Type, Value_Type>{key, Value_Type{}};
+            return hTable[idxs.firstDeletedIdx]->get_value(); 
+        }
+    }
+    cout << "WARNING!! ended up at bottom in []operator" << endl;
+    return hTable[idxs.matchOrEmptyIdx]->get_value();  
 }
 
 //Display the table for debug and testing purposes
@@ -436,19 +375,14 @@ void HashTable<Key_Type, Value_Type>::display(ostream& os)
 template <typename Key_Type, typename Value_Type>
 void HashTable<Key_Type, Value_Type>::rehash()
 {
-     cout << "Rehashing\n";
-
+    cout << "rehashing!\n";
     //uppdate the members to fit the new table
     int oldsize = _size;
-    nDeleted = 0; //borde statistik variablerna nollas?
+    nDeleted = nItems = count_new_items = 0; //borde statistik variablerna nollas?
     Item<Key_Type, Value_Type>** oldTable = hTable; //a new pointer to the old table
 
     _size = nextPrime(_size * 2); //allocate new table at 2x size
     hTable = new Item<Key_Type, Value_Type>*[_size] {nullptr}; //no safety here.. assumes that there allways will be a new allocation available
-
-     //Init the new table with nullptrs
-    // for(int i = oldsize; i < _size; i++)
-        // hTable[i] = nullptr;
 
     for (int i = 0; i < oldsize; ++i)
     {
@@ -461,13 +395,49 @@ void HashTable<Key_Type, Value_Type>::rehash()
     }
     //dealocate the pointers
     delete[] oldTable;
-    cout << "LEAVING REHASH" << endl;
 
     //should not end up here
     if(loadFactor() > MAX_LOAD_FACTOR){
         cout << "OBS! Recursive rehash call!\n";
         rehash();
     }
+}
+
+template <typename Key_Type, typename Value_Type>
+idxPair HashTable<Key_Type, Value_Type>::locateIdxs(const Key_Type& key)
+{
+       int idx = h(key, _size);
+       int startIdx = idx;
+       int firstDeletedIdx = NOT_FOUND;
+       
+       while(1)
+       {
+           total_visited_slots++;
+           
+           if(!hTable[idx] || hTable[idx]->get_key() == key)
+           {
+               break;
+           }
+           
+           if(hTable[idx] == Deleted_Item<Key_Type,Value_Type>::get_Item() )
+           {
+               firstDeletedIdx = (firstDeletedIdx == NOT_FOUND) ? idx : firstDeletedIdx;
+           }
+           
+           idx++;
+           
+           if(idx == startIdx)
+           {
+               idx = NOT_FOUND;
+               break;
+           }
+           
+           if(idx == _size)
+           {
+               idx = 0;
+           }
+       }
+       return {idx, firstDeletedIdx};
 }
 
 /* ********************************** *

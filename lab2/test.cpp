@@ -18,12 +18,10 @@ unsigned my_hash(string s, int tableSize);
 
 int menu();
 
-
 //Test the code
 int main()
 {
     const int TABLE_SIZE = 7;
-
     HashTable<string,int> table(TABLE_SIZE, my_hash);
 
     string key;

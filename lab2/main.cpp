@@ -69,8 +69,6 @@ int main()
         _count++;
     }
     
-    
-    cout << "INTE HÄR?" << endl;
     unsigned total = freq_table.get_total_visited_slots();
 
     cout << "\nNumber of words in the file = " << _count << endl;
@@ -90,14 +88,10 @@ int main()
     cout << "Average Number of slots visited = "
          << fixed << setprecision(2) << (double)total / _count << endl;
     
-    
-    
 
     file_out << "Frequency table ..." << endl << endl;
 
     file_out << freq_table << endl;
-
-    cout << "OKEJSANNSNSN" << endl;
 
     //close the file streams
     file_in.close();
