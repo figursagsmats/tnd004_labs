@@ -27,7 +27,7 @@ struct predSuccPair {
   Comparable a;
   Comparable b;
 };
-static int END = -10000;
+
 template <typename Comparable>
 class BinarySearchTree
 {
@@ -80,7 +80,6 @@ class BinarySearchTree
         return *this;
     }
 
-
     /**
      * Find the smallest item in the tree.
      * Throw UnderflowException if empty.
@@ -106,10 +105,13 @@ class BinarySearchTree
     /**
      * Returns true if x is found in the tree.
      */
-    bool contains( const Comparable & x ) const
-    {
-        return contains( x, root );
-    }
+
+
+     /**This contains invokes the BOOL version - The BiIterator version is further down */
+//    bool contains( const Comparable & x )
+//    {
+//        return contains1( x, root );
+//    }
 
     /**
      * Test if the tree is logically empty.
@@ -285,11 +287,15 @@ class BinarySearchTree
 public:
     class BiIterator
     {
+    private:
+        BinarySearchTree* bst;
+        strongPtr current;
     public:
         BiIterator() {
             current = nullptr;
+            bst = nullptr;
         };
-        BiIterator(strongPtr t) : current{t} {};
+        BiIterator(strongPtr t, BinarySearchTree* b) : current{t}, bst{b} {};
 
         Comparable& operator*() const
         {
@@ -301,124 +307,152 @@ public:
         }
         bool operator==(const BiIterator &it) const
         {
-            return this->current->element == it.current->element;
+            return this->current == it.current;
         }
         bool operator!=(const BiIterator &it) const
         {
-            return !(*this == it);
-            //return this->current->element != it.current->element;
+            return this->current->element != it.current->element;
+//            return !(*this == it);
         }
         //pre
         BiIterator& operator++()
         {
             strongPtr t = current, tmp;
-            cout << "before: " << t->element << endl;
-            //find succesor
-//            if(t->right != nullptr)
-//            {
-//
-//                current = findMin(t->right);
-//            }
-//            else
-//            {
-//                tmp = t;
-//                while(tmp != nullptr && tmp != root)
-//                {
-//                    if((tmp->parent.lock() && tmp->parent.lock()->left == tmp )|| (tmp->parent.lock() == root && root->element > t->element))
-//                    {
-//                        current = tmp->parent.lock();
-//                        break;
-//                    }
-//                    tmp = tmp->parent.lock();
-//                }
-//            }
+            if(t->right != nullptr)
+            {
+                t = bst->findMin(t->right);
+            }
+            else
+            {
+                tmp = t;
+                while(tmp != nullptr && tmp != bst->root)
+                {
+                    if((tmp->parent.lock() && tmp->parent.lock()->left == tmp )|| (tmp->parent.lock() == bst->root && bst->root->element > t->element))
+                    {
+                        t = tmp->parent.lock();
+                        break;
+                    }
+                    tmp = tmp->parent.lock();
+                }
+            }
+            if(current == t)
+            {
+                current =  make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{});
+            }
+            else
+            {
+                current = t;
+            }
             return *this;
         }
+        //post
         BiIterator& operator++(int)
         {
-            strongPtr t = current;
-            BiIterator tmp0 = BiIterator{current};
-            cout << "find succ of " << t->element << endl;
-            // //find succesor
-            // if(t->right != nullptr)
-            //     current = findMin(t->right);
-            // else
-            // {
-            //     strongPtr tmp = t;
-            //
-            //     while(tmp != nullptr && tmp != root)
-            //     {
-            //         if((tmp->parent.lock() && tmp->parent.lock()->left == tmp )|| (tmp->parent.lock() == root && root->element > t->element))
-            //         {
-            //             current = tmp->parent.lock();
-            //             break;
-            //         }
-            //         tmp = tmp->parent.lock();
-            //     }
-            // }
-
-            return *this;
+            strongPtr t = current, tmp;
+            BiIterator tmpIterator = *this;
+            if(t->right != nullptr)
+            {
+                t = bst->findMin(t->right);
+            }
+            else
+            {
+                tmp = t;
+                while(tmp != nullptr && tmp != bst->root)
+                {
+                    if((tmp->parent.lock() && tmp->parent.lock()->left == tmp )|| (tmp->parent.lock() == bst->root && bst->root->element > t->element))
+                    {
+                        t = tmp->parent.lock();
+                        break;
+                    }
+                    tmp = tmp->parent.lock();
+                }
+            }
+            if(current == t)
+            {
+                current =  make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{});
+            }
+            else
+            {
+                current = t;
+            }
+            return tmpIterator;
         }
+        //pre
         BiIterator& operator--()
         {
             strongPtr t = current, tmp;
-            // //find pred
-            // if(t->left != nullptr)
-            //     current = findMax(t->left)->element;
-            // else
-            // {
-            //     tmp = t;
-            //
-            //     while(tmp != nullptr && tmp != root)
-            //     {
-            //         if((tmp->parent.lock() && tmp->parent.lock()->right == tmp )|| (tmp->parent.lock() == root && root->element < t->element))
-            //            {
-            //               current = tmp->parent.lock()->element;
-            //               break;
-            //            }
-            //
-            //         tmp = tmp->parent.lock();
-            //     }
-            // }
+            if(t->left != nullptr)
+            {
+                t = bst->findMax(t->left);
+            }
+            else
+            {
+                tmp = t;
+                while(tmp != nullptr && tmp != bst->root)
+                {
+                    if((tmp->parent.lock() && tmp->parent.lock()->right == tmp )|| (tmp->parent.lock() == bst->root && bst->root->element < t->element))
+                    {
+                        t = tmp->parent.lock();
+                        break;
+                    }
+                    tmp = tmp->parent.lock();
+                }
+            }
+            if(current == t)
+            {
+                current =  make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{});
+            }
+            else
+            {
+                current = t;
+            }
             return *this;
         }
+        //post
         BiIterator& operator--(int)
         {
-            strongPtr t = current;
-            BiIterator tmp0 = BiIterator{current};
-            // //find pred
-            // if(t->left != nullptr)
-            //     current = findMax(t->left)->element;
-            // else
-            // {
-            //     strongPtr tmp = t;
-            //
-            //     while(tmp != nullptr && tmp != root)
-            //     {
-            //         if((tmp->parent.lock() && tmp->parent.lock()->right == tmp )|| (tmp->parent.lock() == root && root->element < t->element))
-            //            {
-            //               current = tmp->parent.lock()->element;
-            //               break;
-            //            }
-            //
-            //         tmp = tmp->parent.lock();
-            //     }
-            // }
-            return *this;
+            strongPtr t = current, tmp;
+            BiIterator tmpIterator = *this;
+            if(t->left != nullptr)
+            {
+                t = bst->findMax(t->left);
+            }
+            else
+            {
+                tmp = t;
+                while(tmp != nullptr && tmp != bst->root)
+                {
+                    if((tmp->parent.lock() && tmp->parent.lock()->right == tmp )|| (tmp->parent.lock() == bst->root && bst->root->element < t->element))
+                    {
+                        t = tmp->parent.lock();
+                        break;
+                    }
+                    tmp = tmp->parent.lock();
+                }
+            }
+            if(current == t)
+            {
+                current =  make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{});
+            }
+            else
+            {
+                current = t;
+            }
+            return tmpIterator;
         }
-
-
-    private:
-        strongPtr current;
     };
 
-    BiIterator begin() const
-        {
-            return BiIterator{ findMin(root)};
-        }
-    BiIterator end() const
+    BiIterator begin()
     {
-        return BiIterator{ strongPtr{}};
+        return BiIterator(findMin(root), this);
+    }
+    BiIterator end()
+    {
+        return BiIterator{ make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{}), this};
+    }
+    BiIterator contains( const Comparable & x )
+    {
+        return contains2( x, root );
     }
 private:
 
@@ -428,7 +462,7 @@ private:
      * t is the node that roots the subtree.
      * Set the new root of the subtree.
      */
-    void insert( const int & x, strongPtr & t, weakPtr p )
+    void insert( const Comparable & x, strongPtr & t, weakPtr p )
     {
         if( t == nullptr )
             t = make_shared<BinaryNode>(x, nullptr, nullptr, p);
@@ -438,7 +472,8 @@ private:
             insert( x, t->right, t );
         else
         {
-            ;  // Duplicate; do nothing
+
+            ++(t->element);  // Duplicate; do nothing  !!!!! FOR EX 4 ONLY
         }
     }
 
@@ -448,7 +483,7 @@ private:
      * t is the node that roots the subtree.
      * Set the new root of the subtree.
      */
-    void insert( const int && x, strongPtr & t, weakPtr p )
+    void insert( const Comparable && x, strongPtr & t, weakPtr p )
     {
         if( t == nullptr )
             t = make_shared<BinaryNode>(x, nullptr, nullptr, p);
@@ -458,7 +493,7 @@ private:
             insert( std::move( x ), t->right, t );
         else
         {
-            ;  // Duplicate; do nothing
+            ++(t->element);  // Duplicate; do nothing, !!! FOR EX 4 ONLY
         }
     }
 
@@ -480,30 +515,26 @@ private:
         {
             Comparable tmp = t->element;
             t->element = findMin( t->right )->element;
-
             remove( t->element, t->right );
         }
         else if (t->left == nullptr && t->right == nullptr)
         {
-
             t = nullptr;
-            // printTree();
+            printTree();
         }
         else //1 child
         {
-
             strongPtr oldNode = t;
             t = ( t->left != nullptr ) ? t->left : t->right;
 
-            // cout << t->parent.lock()->element << endl;
-            // cout << oldNode->parent.lock()->element << endl;
+            cout << t->parent.lock()->element << endl;
+            cout << oldNode->parent.lock()->element << endl;
             if(oldNode->parent.lock())
                 t->parent = oldNode->parent.lock();
 
-            // printTree();
+            printTree();
             oldNode = nullptr;
         }
-
     }
 
     /**
@@ -531,51 +562,59 @@ private:
         return t;
     }
 
-
     /**
      * Internal method to test if an item is in a subtree.
      * x is item to search for.
      * t is the node that roots the subtree.
      */
-//    bool contains( const Comparable & x, strongPtr t ) const
-//    {
-//        if( t == nullptr )
-//            return false;
-//        else if( x < t->element )
-//            return contains( x, t->left );
-//        else if( t->element < x )
-//            return contains( x, t->right );
-//        else
-//            return true;    // Match
-//    }
-/****** NONRECURSIVE VERSION*************************/
-    bool contains( const Comparable & x, strongPtr t ) const
+    bool contains1( const Comparable & x, strongPtr t ) const
     {
-        return true;
-        // cout << "OEKJ" << endl;
-        // BiIterator it = begin();
-        //
-        // while( it != end() )
-        //     if( x < it->element )
-        //         it = it->left;
-        //     else if( it->element < x )
-        //         it = it->right;
-        //     else
-        //         return true;    // Match
-        //
-        // return false;   // No match
+        if( t == nullptr )
+            return false;
+        else if( x < t->element )
+            return contains1( x, t->left );
+        else if( t->element < x )
+            return contains1( x, t->right );
+        else
+            return true;    // Match
+    }
+/****** NONRECURSIVE VERSION*************************/
+    BiIterator contains2( const Comparable & x, strongPtr t )
+    {
+        BiIterator it;
+        for(it = begin(); it != end(); it++)
+        {
+            if(it->element == x)
+                return it;
+        }
+        return end();   // No match
     }
     public:
     void test()
     {
-        cout << "TEST" << endl;
+        cout << "TEST!" << endl;
         BiIterator it = begin();
-        BiIterator it2 = BiIterator(it->parent.lock());
-        cout << it->element << endl;
+        BiIterator it2 = BiIterator(findMax(root),this);
 
-        // ++it;
-        cout << *it2 << endl;
-        cout << (it != it2) << endl;
+        BiIterator en = end();
+//        cout << en->element << endl;
+
+//        while(it != end())
+//            cout << (++it)->element << endl;
+//
+//        for(it = begin(); it != end(); it++)
+//            cout << it->element << endl;
+
+//        BiIterator it2 = begin();
+
+//        BiIterator en = end();
+//        cout << (it != en ) << endl;
+
+//        cout << (++it)->element << endl;
+
+//        cout << *it2 << endl;
+//
+//        cout << (it != it2) << endl;
 
     }
     private:
@@ -605,8 +644,8 @@ private:
                 cout << tmp->element << endl;
             else
                 cout << endl;
-            display( t->left, out, w+2 );
-            display( t->right, out, w+2 );
+            display( t->left, out, w+7 );
+            display( t->right, out, w+7 );
         }
     }
 
@@ -616,13 +655,11 @@ private:
      */
     void printTree( strongPtr t, ostream & out ) const
     {
-
         if( t != nullptr )
         {
             display(t, out);
 //            out << t->element << endl;
 //            printTree( t->left, out );
-//
 //            printTree( t->right, out );
         }
     }
@@ -637,10 +674,8 @@ private:
         else
             return make_shared<BinaryNode>( t->element, clone( t->left ), clone( t->right ), weakPtr{} );
 
-    //returnerar weakPtr{} istï¿½ller fï¿½r pekare till inte ï¿½nnu skapat objekt...
-    //lï¿½nkar ihop parents med void link()
-
-
+    //returnerar weakPtr{} iställer för pekare till inte ännu skapat objekt...
+    //länkar ihop parents med void link()
     }
     void link(strongPtr t)
     {
@@ -671,7 +706,6 @@ private:
                 find_pred_succ_not_in_tree(c, a, b, t->left);
         }
     }
-
 };
 
 #endif

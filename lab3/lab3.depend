@@ -4,7 +4,7 @@
 	<vector>
 	"BinarySearchTree.h"
 
-1463407994 c:\users\alexa_000\desktop\lab3\binarysearchtree.h
+1463434636 c:\users\alexa_000\desktop\lab3\binarysearchtree.h
 	"dsexceptions.h"
 	<algorithm>
 	<memory>
@@ -12,8 +12,22 @@
 
 1462966223 c:\users\alexa_000\desktop\lab3\dsexceptions.h
 
-1463406447 source:c:\users\alexa_000\desktop\lab3\test2.cpp
+1463432168 source:c:\users\alexa_000\desktop\lab3\test2.cpp
 	<iostream>
 	<vector>
+	"BinarySearchTree.h"
+
+1462966224 source:c:\users\alexa_000\desktop\lab3\test3.cpp
+	<iostream>
+	<vector>
+	<iterator>
+	<fstream>
+	"BinarySearchTree.h"
+
+1463434487 source:c:\users\alexa_000\desktop\lab3\main.cpp
+	<iostream>
+	<vector>
+	<iterator>
+	<fstream>
 	"BinarySearchTree.h"
 

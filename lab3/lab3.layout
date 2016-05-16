@@ -2,29 +2,49 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="test2.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.cpp" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="922" topLine="26" />
+			<Cursor1 position="1354" topLine="30" />
 		</Cursor>
 	</File>
-	<File name="other files\test1_out.txt" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="other files\test1_out.txt" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="675" topLine="80" />
+			<Cursor1 position="531" topLine="77" />
 		</Cursor>
 	</File>
-	<File name="other files\test2_out.txt" open="1" top="1" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="test2.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="909" topLine="79" />
+			<Cursor1 position="354" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="BinarySearchTree.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="582" zoom_1="0" zoom_2="0">
+	<File name="other files\test3_out.txt" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4059" topLine="157" />
+			<Cursor1 position="655" topLine="49" />
 		</Cursor>
 	</File>
-	<File name="test1.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="test3.cpp" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2399" topLine="84" />
+			<Cursor1 position="520" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="BinarySearchTree.h" open="1" top="1" tabpos="1" split="0" active="1" splitpos="582" zoom_1="-1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="889" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="other files\words.txt" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="145" topLine="5" />
+		</Cursor>
+	</File>
+	<File name="other files\test2_out.txt" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="741" topLine="41" />
+		</Cursor>
+	</File>
+	<File name="test1.cpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="928" topLine="22" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
