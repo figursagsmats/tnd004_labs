@@ -1,0 +1,14 @@
+Frequency table ...
+
+key = "guru"    value = 1
+key = "alex"    value = 3
+key = "gurra"    value = 2
+key = "party-janne"    value = 1
+key = "saga"    value = 1
+key = "arvid"    value = 2
+key = "janne"    value = 1
+key = "totte"    value = 1
+key = "palle"    value = 1
+key = "sagga"    value = 1
+key = "krökov"    value = 1
+
