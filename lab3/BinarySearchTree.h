@@ -346,7 +346,7 @@ public:
             return *this;
         }
         //post
-        BiIterator& operator++(int)
+        BiIterator operator++(int)
         {
             strongPtr t = current, tmp;
             BiIterator tmpIterator = *this;
@@ -409,7 +409,7 @@ public:
             return *this;
         }
         //post
-        BiIterator& operator--(int)
+        BiIterator operator--(int)
         {
             strongPtr t = current, tmp;
             BiIterator tmpIterator = *this;
@@ -674,8 +674,8 @@ private:
         else
             return make_shared<BinaryNode>( t->element, clone( t->left ), clone( t->right ), weakPtr{} );
 
-    //returnerar weakPtr{} iställer för pekare till inte ännu skapat objekt...
-    //länkar ihop parents med void link()
+    //returnerar weakPtr{} istï¿½ller fï¿½r pekare till inte ï¿½nnu skapat objekt...
+    //lï¿½nkar ihop parents med void link()
     }
     void link(strongPtr t)
     {
