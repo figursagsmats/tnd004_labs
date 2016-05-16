@@ -29,16 +29,31 @@ unsigned _hash(string s, int tableSize);
 
 int main()
 {
-    HashTable<string,int> freq_table(100, _hash);
-
-    string name;
-
-    // cout << "Enter file name: ";
-    // cin >> name;
-    name = "test_file1.txt";
     
-    ifstream file_in(name);
-    ofstream file_out("out_"+name);
+
+    string fileNr, temp, fileName;
+    int initialTableSize;
+    
+    cout << "Select test file nr: ";
+    cin >> fileNr;
+    cout << "Enter initial table size: ";
+    cin >> initialTableSize;
+    cout << "Allow rehasing? (y/n)";
+    cin >> temp;
+    
+    HashTable<string,int> freq_table(initialTableSize, _hash);
+    if(temp == "n"){
+        freq_table.disallowRehashing();
+        cout << "rehashing disabled" << endl;;
+    } 
+    else{
+        
+        cout << "rehashing enabled" << endl;
+    }
+    
+    fileName = "test_file" + fileNr + ".txt";
+    ifstream file_in(fileName);
+    ofstream file_out("out_"+fileName);
 
     if (!file_in || !file_out)
     {
@@ -46,7 +61,10 @@ int main()
 
         return 0;
     }
-
+    
+    
+    cout << "Reading file: '" << fileName << "'..." << endl << endl;
+        
     string s;
     int _count = 0;
     
