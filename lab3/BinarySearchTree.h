@@ -194,6 +194,10 @@ class BinarySearchTree
 
     bool find_pred_succ(const Comparable& c, Comparable& a, Comparable& b) const
     {
+        find_pred_succ_not_in_tree(c,a,b,root);
+        
+        return true;
+        
         strongPtr t = root;
         while(t != nullptr)
         {
@@ -367,6 +371,7 @@ public:
                     tmp = tmp->parent.lock();
                 }
             }
+            
             if(current == t)
             {
                 current =  make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{});
@@ -590,34 +595,7 @@ private:
         }
         return end();   // No match
     }
-    public:
-    void test()
-    {
-        cout << "TEST!" << endl;
-        BiIterator it = begin();
-        BiIterator it2 = BiIterator(findMax(root),this);
-
-        BiIterator en = end();
-//        cout << en->element << endl;
-
-//        while(it != end())
-//            cout << (++it)->element << endl;
-//
-//        for(it = begin(); it != end(); it++)
-//            cout << it->element << endl;
-
-//        BiIterator it2 = begin();
-
-//        BiIterator en = end();
-//        cout << (it != en ) << endl;
-
-//        cout << (++it)->element << endl;
-
-//        cout << *it2 << endl;
-//
-//        cout << (it != it2) << endl;
-
-    }
+    
     private:
 
 
@@ -685,6 +663,7 @@ private:
             tmp->right->parent = tmp;
         if(tmp->left)
             tmp->left->parent = tmp;
+        
         return tmp;
 
     //returnerar weakPtr{} ist�ller f�r pekare till inte �nnu skapat objekt...
@@ -712,11 +691,18 @@ private:
             if(t->right)
                 find_pred_succ_not_in_tree(c, a, b, t->right);
         }
-        else
+        else if(c < t->element)
         {
             b = t->element;
             if(t->left)
                 find_pred_succ_not_in_tree(c, a, b, t->left);
+        }
+        else //found c
+        {
+            if(t->left)
+                find_pred_succ_not_in_tree(c, a, b, t->left);
+            if(t->right)
+                find_pred_succ_not_in_tree(c, a, b, t->right);   
         }
     }
 };
