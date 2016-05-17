@@ -84,13 +84,12 @@ int main( )
     cout << "\nPHASE 6: remove\n\n";
     /**************************************/
 
-//    for(int i = 0; i < 35; i+= 2 )
-//    {
-//        cout << "remove " << i << endl;
-//        t1.remove( i );
-//
-//    }
-    t1.remove( 20 );
+   for(int i = 0; i < 35; i+= 2 )
+   {
+       cout << "remove " << i << endl;
+       t1.remove( i );
+
+   }
     //Display the tree
     cout << "\nT1" << endl;
     t1.printTree( );

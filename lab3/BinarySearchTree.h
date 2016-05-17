@@ -7,6 +7,8 @@
 #include <iomanip>
 using namespace std;
 
+#define EX3
+
 // BinarySearchTree class
 //
 // CONSTRUCTION: zero parameter
@@ -108,10 +110,12 @@ class BinarySearchTree
 
 
      /**This contains invokes the BOOL version - The BiIterator version is further down */
+    #ifndef EX3
     bool contains( const Comparable & x )
     {
         return contains1( x, root );
     }
+    #endif
 
     /**
      * Test if the tree is logically empty.
@@ -455,11 +459,14 @@ public:
     {
         return BiIterator{ make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{}), this};
     }
-
-//    BiIterator contains( const Comparable & x )
-//    {
-//        return contains2( x, root );
-//    }
+    
+    #ifdef EX3
+   BiIterator contains( const Comparable & x )
+   {
+       return contains2( x, root );
+   }
+   
+   #endif
 private:
 
     /**
@@ -478,8 +485,9 @@ private:
             insert( x, t->right, t );
         else
         {
-
+            #ifndef EX3
             ++(t->element);  // Duplicate; do nothing  !!!!! FOR EX 4 ONLY
+            #endif
         }
     }
 
@@ -499,7 +507,9 @@ private:
             insert( std::move( x ), t->right, t );
         else
         {
+            #ifndef EX3
             ++(t->element);  // Duplicate; do nothing, !!! FOR EX 4 ONLY
+            #endif
         }
     }
 
