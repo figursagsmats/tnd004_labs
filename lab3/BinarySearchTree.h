@@ -513,26 +513,26 @@ private:
             remove( x, t->right );
         else if( t->left != nullptr && t->right != nullptr ) // Two children
         {
-            Comparable tmp = t->element;
+//            Comparable tmp = t->element;
             t->element = findMin( t->right )->element;
             remove( t->element, t->right );
         }
         else if (t->left == nullptr && t->right == nullptr)
         {
             t = nullptr;
-            printTree();
+//            printTree();
         }
         else //1 child
         {
             strongPtr oldNode = t;
             t = ( t->left != nullptr ) ? t->left : t->right;
 
-            cout << t->parent.lock()->element << endl;
-            cout << oldNode->parent.lock()->element << endl;
+//            cout << t->parent.lock()->element << endl;
+//            cout << oldNode->parent.lock()->element << endl;
             if(oldNode->parent.lock())
                 t->parent = oldNode->parent.lock();
 
-            printTree();
+//            printTree();
             oldNode = nullptr;
         }
     }
@@ -644,8 +644,8 @@ private:
                 cout << tmp->element << endl;
             else
                 cout << endl;
-            display( t->left, out, w+7 );
-            display( t->right, out, w+7 );
+            display( t->left, out, w+4);
+            display( t->right, out, w+4 );
         }
     }
 

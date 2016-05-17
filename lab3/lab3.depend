@@ -1,10 +1,10 @@
 # depslib dependency file v1.0
-1463247635 source:c:\users\alexa_000\desktop\lab3\test1.cpp
+1463398680 source:c:\users\alexa_000\desktop\lab3\test1.cpp
 	<iostream>
 	<vector>
 	"BinarySearchTree.h"
 
-1463434636 c:\users\alexa_000\desktop\lab3\binarysearchtree.h
+1463478840 c:\users\alexa_000\desktop\lab3\binarysearchtree.h
 	"dsexceptions.h"
 	<algorithm>
 	<memory>
@@ -12,7 +12,7 @@
 
 1462966223 c:\users\alexa_000\desktop\lab3\dsexceptions.h
 
-1463432168 source:c:\users\alexa_000\desktop\lab3\test2.cpp
+1463477079 source:c:\users\alexa_000\desktop\lab3\test2.cpp
 	<iostream>
 	<vector>
 	"BinarySearchTree.h"
