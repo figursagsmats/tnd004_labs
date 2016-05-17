@@ -7,7 +7,7 @@
 #include <iomanip>
 using namespace std;
 
-#define EX3
+// #define EX3
 
 // BinarySearchTree class
 //
@@ -315,7 +315,7 @@ public:
         }
         bool operator==(const BiIterator &it) const
         {
-            return this->current == it.current;
+            return this->current->element == it.current->element;
         }
         bool operator!=(const BiIterator &it) const
         {
@@ -457,7 +457,7 @@ public:
     }
     BiIterator end()
     {
-        return BiIterator{ make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{}), this};
+        return BiIterator{ make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{}, weakPtr{} ), this};
     }
     
     #ifdef EX3
@@ -543,9 +543,7 @@ private:
             strongPtr oldNode = t;
             t = ( t->left != nullptr ) ? t->left : t->right;
 
-//            cout << t->parent.lock()->element << endl;
-//            cout << oldNode->parent.lock()->element << endl;
-            if(oldNode->parent.lock())
+            if(oldNode->parent.lock()) //root = no parent
                 t->parent = oldNode->parent.lock();
 
 //            printTree();
