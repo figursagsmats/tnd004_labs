@@ -108,10 +108,10 @@ class BinarySearchTree
 
 
      /**This contains invokes the BOOL version - The BiIterator version is further down */
-//    bool contains( const Comparable & x )
-//    {
-//        return contains1( x, root );
-//    }
+    bool contains( const Comparable & x )
+    {
+        return contains1( x, root );
+    }
 
     /**
      * Test if the tree is logically empty.
@@ -450,10 +450,11 @@ public:
     {
         return BiIterator{ make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{}), this};
     }
-    BiIterator contains( const Comparable & x )
-    {
-        return contains2( x, root );
-    }
+
+//    BiIterator contains( const Comparable & x )
+//    {
+//        return contains2( x, root );
+//    }
 private:
 
     /**
@@ -669,26 +670,38 @@ private:
      */
     strongPtr clone( strongPtr t ) const
     {
+        strongPtr tmp;
         if( t == nullptr )
+        {
             return nullptr;
+        }
+
         else
-            return make_shared<BinaryNode>( t->element, clone( t->left ), clone( t->right ), weakPtr{} );
+        {
+            tmp = make_shared<BinaryNode>( t->element, clone( t->left ), clone( t->right ), weakPtr{} );
+        }
+
+        if(tmp->right)
+            tmp->right->parent = tmp;
+        if(tmp->left)
+            tmp->left->parent = tmp;
+        return tmp;
 
     //returnerar weakPtr{} ist�ller f�r pekare till inte �nnu skapat objekt...
-    //l�nkar ihop parents med void link()
+    //l�nkar ihop parents med void link()... löst?
     }
     void link(strongPtr t)
     {
-        if(t->left)
-        {
-           t->left->parent = t;
-           link(t->left);
-        }
-        if(t->right)
-        {
-           t->right->parent = t;
-           link(t->right);
-        }
+//        if(t->left)
+//        {
+//           t->left->parent = t;
+//           link(t->left);
+//        }
+//        if(t->right)
+//        {
+//           t->right->parent = t;
+//           link(t->right);
+//        }
     }
 
     void find_pred_succ_not_in_tree(const Comparable& c, Comparable& a, Comparable& b, strongPtr t ) const
