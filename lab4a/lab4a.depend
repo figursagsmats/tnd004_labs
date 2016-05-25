@@ -1,0 +1,28 @@
+# depslib dependency file v1.0
+1464166968 source:c:\users\alexa_000\desktop\lab4a\list.cpp
+	<iostream>
+	<iomanip>
+	"list.h"
+
+1464166968 c:\users\alexa_000\desktop\lab4a\list.h
+
+1464175997 source:c:\users\alexa_000\desktop\lab4a\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+	<cstdlib>
+	"digraph.h"
+
+1464166967 c:\users\alexa_000\desktop\lab4a\digraph.h
+	"list.h"
+
+1464175924 source:c:\users\alexa_000\desktop\lab4a\digraph.cpp
+	<iostream>
+	<iomanip>
+	<cassert>
+	"digraph.h"
+	"queue.h"
+
+1464166968 c:\users\alexa_000\desktop\lab4a\queue.h
+	<cassert>
+
