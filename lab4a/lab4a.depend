@@ -26,3 +26,20 @@
 1464166968 c:\users\alexa_000\desktop\lab4a\queue.h
 	<cassert>
 
+1464166968 source:c:\users\alexa_000\desktop\tnd004_labs\lab4a\list.cpp
+	<iostream>
+	<iomanip>
+	"list.h"
+
+1464166968 c:\users\alexa_000\desktop\tnd004_labs\lab4a\list.h
+
+1464175997 source:c:\users\alexa_000\desktop\tnd004_labs\lab4a\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+	<cstdlib>
+	"digraph.h"
+
+1464166967 c:\users\alexa_000\desktop\tnd004_labs\lab4a\digraph.h
+	"list.h"
+

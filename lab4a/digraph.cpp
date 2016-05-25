@@ -92,8 +92,6 @@ void Digraph::uwsssp(int s)
             n = array[v].getNext();
         }
     }
-
-    // *** TODO ***
 }
 
 // positive weighted single source shortest pats
@@ -125,20 +123,21 @@ void Digraph::pwsssp(int s)
             {
                 dist[n->vertex] = dist[v] + n->weight;
                 path[n->vertex] = v;
-                cout << n->vertex << " : " << path[n->vertex] << " : " << dist[n->vertex] << endl;
             }
             n = array[v].getNext();
         }
 
         //find nearest closest
         int currentMin = INFINITY;
-        v = -1;
         for(int i = 1; i < size + 1; i++)
         {
             if(!done[i] && dist[i] < currentMin)
+            {
                 v = i;
+                currentMin = dist[i];
+            }
         }
-        if(v == -1)
+        if(currentMin == INFINITY)
             break;
         done[v] = true;
     }
@@ -175,7 +174,7 @@ void Digraph::printTree() const
     cout << "----------------------" << endl;
 }
 
-//rekursion svårt, kunde inte skriva ut snyggt utan denna hjälpfunktion
+//rekursion svï¿½rt, kunde inte skriva ut snyggt utan denna hjï¿½lpfunktion
 void printPartRec(int t, int* path)
 {
     if(path[t] != -1)
