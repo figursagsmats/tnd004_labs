@@ -7,6 +7,8 @@
 #include <iomanip>
 using namespace std;
 
+// #define EX3
+
 // BinarySearchTree class
 //
 // CONSTRUCTION: zero parameter
@@ -108,10 +110,12 @@ class BinarySearchTree
 
 
      /**This contains invokes the BOOL version - The BiIterator version is further down */
+    #ifndef EX3
     bool contains( const Comparable & x )
     {
         return contains1( x, root );
     }
+    #endif
 
     /**
      * Test if the tree is logically empty.
@@ -194,6 +198,10 @@ class BinarySearchTree
 
     bool find_pred_succ(const Comparable& c, Comparable& a, Comparable& b) const
     {
+        find_pred_succ_not_in_tree(c,a,b,root);
+        
+        return true;
+        
         strongPtr t = root;
         while(t != nullptr)
         {
@@ -307,7 +315,7 @@ public:
         }
         bool operator==(const BiIterator &it) const
         {
-            return this->current == it.current;
+            return this->current->element == it.current->element;
         }
         bool operator!=(const BiIterator &it) const
         {
@@ -367,6 +375,7 @@ public:
                     tmp = tmp->parent.lock();
                 }
             }
+            
             if(current == t)
             {
                 current =  make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{});
@@ -448,13 +457,16 @@ public:
     }
     BiIterator end()
     {
-        return BiIterator{ make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{},weakPtr{}), this};
+        return BiIterator{ make_shared<BinaryNode>(Comparable{},strongPtr{},strongPtr{}, weakPtr{} ), this};
     }
-
-//    BiIterator contains( const Comparable & x )
-//    {
-//        return contains2( x, root );
-//    }
+    
+    #ifdef EX3
+   BiIterator contains( const Comparable & x )
+   {
+       return contains2( x, root );
+   }
+   
+   #endif
 private:
 
     /**
@@ -473,8 +485,9 @@ private:
             insert( x, t->right, t );
         else
         {
-
+            #ifndef EX3
             ++(t->element);  // Duplicate; do nothing  !!!!! FOR EX 4 ONLY
+            #endif
         }
     }
 
@@ -494,7 +507,9 @@ private:
             insert( std::move( x ), t->right, t );
         else
         {
+            #ifndef EX3
             ++(t->element);  // Duplicate; do nothing, !!! FOR EX 4 ONLY
+            #endif
         }
     }
 
@@ -528,9 +543,7 @@ private:
             strongPtr oldNode = t;
             t = ( t->left != nullptr ) ? t->left : t->right;
 
-//            cout << t->parent.lock()->element << endl;
-//            cout << oldNode->parent.lock()->element << endl;
-            if(oldNode->parent.lock())
+            if(oldNode->parent.lock()) //root = no parent
                 t->parent = oldNode->parent.lock();
 
 //            printTree();
@@ -590,34 +603,7 @@ private:
         }
         return end();   // No match
     }
-    public:
-    void test()
-    {
-        cout << "TEST!" << endl;
-        BiIterator it = begin();
-        BiIterator it2 = BiIterator(findMax(root),this);
-
-        BiIterator en = end();
-//        cout << en->element << endl;
-
-//        while(it != end())
-//            cout << (++it)->element << endl;
-//
-//        for(it = begin(); it != end(); it++)
-//            cout << it->element << endl;
-
-//        BiIterator it2 = begin();
-
-//        BiIterator en = end();
-//        cout << (it != en ) << endl;
-
-//        cout << (++it)->element << endl;
-
-//        cout << *it2 << endl;
-//
-//        cout << (it != it2) << endl;
-
-    }
+    
     private:
 
 
@@ -685,6 +671,7 @@ private:
             tmp->right->parent = tmp;
         if(tmp->left)
             tmp->left->parent = tmp;
+        
         return tmp;
 
     //returnerar weakPtr{} ist�ller f�r pekare till inte �nnu skapat objekt...
@@ -712,11 +699,18 @@ private:
             if(t->right)
                 find_pred_succ_not_in_tree(c, a, b, t->right);
         }
-        else
+        else if(c < t->element)
         {
             b = t->element;
             if(t->left)
                 find_pred_succ_not_in_tree(c, a, b, t->left);
+        }
+        else //found c
+        {
+            if(t->left)
+                find_pred_succ_not_in_tree(c, a, b, t->left);
+            if(t->right)
+                find_pred_succ_not_in_tree(c, a, b, t->right);   
         }
     }
 };
