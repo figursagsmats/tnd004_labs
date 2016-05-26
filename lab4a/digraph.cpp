@@ -112,14 +112,16 @@ void Digraph::pwsssp(int s)
     dist[s] = 0;
     done[s] = true;
 
-    int v = s;
+    int v = s; //
 
     while(1)
     {
         Node *n = array[v].getFirst();
         while(n != nullptr)
         {
-            if( !done[n->vertex] && dist[n->vertex] > dist[v] + n->weight )
+            bool isDone = done[n->vertex];
+            bool isBetterPath = dist[n->vertex] > dist[v] + n->weight;
+            if( !isDone&& isBetterPath )
             {
                 dist[n->vertex] = dist[v] + n->weight;
                 path[n->vertex] = v;
@@ -129,6 +131,7 @@ void Digraph::pwsssp(int s)
 
         //find nearest closest
         int currentMin = INFINITY;
+        //Iterate over all verticies
         for(int i = 1; i < size + 1; i++)
         {
             if(!done[i] && dist[i] < currentMin)

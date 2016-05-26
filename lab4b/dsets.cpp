@@ -59,7 +59,7 @@ void DSets::join(int r, int s)
     // weighted union (by size)
 
 
-    //LOOK IN TEXTBOOK
+    //From texttbook
     int c_s = 0;
     int c_r = 0;
     for(int i = 1; i < size; i++)
@@ -99,7 +99,7 @@ int DSets::find(int x)
     // find with path compression
 
 
-    //LOOK IN TEXTBOOK
+    //From textbook
     if (array[x] < 0)
     {
         return x;

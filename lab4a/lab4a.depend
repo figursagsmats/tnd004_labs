@@ -43,3 +43,20 @@
 1464166967 c:\users\alexa_000\desktop\tnd004_labs\lab4a\digraph.h
 	"list.h"
 
+1464273055 source:c:\dev\git\tnd004_labs\lab4a\list.cpp
+	<iostream>
+	<iomanip>
+	"list.h"
+
+1464273055 c:\dev\git\tnd004_labs\lab4a\list.h
+
+1464273055 source:c:\dev\git\tnd004_labs\lab4a\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+	<cstdlib>
+	"digraph.h"
+
+1464273055 c:\dev\git\tnd004_labs\lab4a\digraph.h
+	"list.h"
+
